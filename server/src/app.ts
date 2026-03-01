@@ -2,11 +2,12 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
+import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import { config } from './config/environment';
 import { swaggerSpec } from './config/swagger';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
-import { logger } from './utils/logger';
+import { stream } from './utils/logger';
 import routes from './routes';
 import { limiter } from './middlewares/rateLimiter';
 
@@ -26,11 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 // Compression middleware
 app.use(compression());
 
-// Request logging
-app.use((req, _res, next) => {
-    logger.info(`${req.method} ${req.path}`);
-    next();
-});
+// HTTP request logging with Morgan and Winston
+app.use(morgan('combined', { stream }));
 
 // Health check endpoint (before rate limiting)
 app.get('/health', (_req, res) => {

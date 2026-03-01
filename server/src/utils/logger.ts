@@ -1,36 +1,68 @@
+import winston from 'winston';
 import { config } from '../config/environment';
 
-type LogLevel = 'info' | 'warn' | 'error' | 'debug';
+// Define log levels
+const levels = {
+    error: 0,
+    warn: 1,
+    info: 2,
+    http: 3,
+    debug: 4,
+};
 
-class Logger {
-    private log(level: LogLevel, message: string, meta?: any) {
-        const timestamp = new Date().toISOString();
-        const logMessage = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
+// Define colors for each level
+const colors = {
+    error: 'red',
+    warn: 'yellow',
+    info: 'green',
+    http: 'magenta',
+    debug: 'blue',
+};
 
-        if (meta) {
-            console[level](logMessage, meta);
-        } else {
-            console[level](logMessage);
-        }
-    }
+winston.addColors(colors);
 
-    info(message: string, meta?: any) {
-        this.log('info', message, meta);
-    }
+// Define log format
+const format = winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.errors({ stack: true }),
+    winston.format.splat(),
+    winston.format.json()
+);
 
-    warn(message: string, meta?: any) {
-        this.log('warn', message, meta);
-    }
+// Console format with colors
+const consoleFormat = winston.format.combine(
+    winston.format.colorize({ all: true }),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.printf((info) => {
+        const { timestamp, level, message, ...meta } = info;
+        const metaStr = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : '';
+        return `${timestamp} [${level}]: ${message} ${metaStr}`;
+    })
+);
 
-    error(message: string, meta?: any) {
-        this.log('error', message, meta);
-    }
+// Define transports
+const transports: winston.transport[] = [
+    // Console transport
+    new winston.transports.Console({
+        format: consoleFormat,
+    }),
+];
 
-    debug(message: string, meta?: any) {
-        if (config.nodeEnv === 'development') {
-            this.log('debug', message, meta);
-        }
-    }
-}
 
-export const logger = new Logger();
+// Create logger instance
+const logger = winston.createLogger({
+    level: config.nodeEnv === 'development' ? 'debug' : 'info',
+    levels,
+    format,
+    transports,
+    exitOnError: false,
+});
+
+// Create a stream object for Morgan HTTP logger
+export const stream = {
+    write: (message: string) => {
+        logger.http(message.trim());
+    },
+};
+
+export { logger };
