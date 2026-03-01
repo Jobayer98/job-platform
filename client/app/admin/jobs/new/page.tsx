@@ -18,9 +18,7 @@ import {
 import { ArrowLeft, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
+import { API_URL } from "@/lib/constants";
 
 const categories = [
   "Engineering",

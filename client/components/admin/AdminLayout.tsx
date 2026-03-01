@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logout, getAdminUser } from "@/lib/auth";
+import { toast } from "sonner";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -32,9 +33,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   ];
 
   const handleLogout = () => {
-    if (confirm("Are you sure you want to logout?")) {
+    toast.success("Logged out successfully!");
+    setTimeout(() => {
       logout();
-    }
+    }, 500);
   };
 
   return (

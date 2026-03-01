@@ -9,19 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Search, Plus, Eye, Edit, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  category: string;
-  applications_count: number;
-  created_at: string;
-}
+import { API_URL } from "@/lib/constants";
+import type { Job } from "@/lib/types";
 
 export default function AdminJobsPage() {
   const router = useRouter();
@@ -62,25 +51,22 @@ export default function AdminJobsPage() {
     }
   };
 
-  const handleDelete = async (jobId: string) => {
-    if (!confirm("Are you sure you want to delete this job?")) return;
-
-    try {
-      const res = await fetch(`${API_URL}/jobs/${jobId}`, {
+  const handleDelete = async (jobId: string, jobTitle: string) => {
+    toast.promise(
+      fetch(`${API_URL}/jobs/${jobId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
-      });
-
-      if (res.ok) {
-        toast.success("Job deleted successfully!");
-        fetchJobs();
-      } else {
-        toast.error("Failed to delete job");
-      }
-    } catch (error) {
-      console.error("Error deleting job:", error);
-      toast.error("Failed to delete job. Please try again.");
-    }
+      }).then(async (res) => {
+        if (!res.ok) throw new Error("Failed to delete job");
+        await fetchJobs();
+        return { jobTitle };
+      }),
+      {
+        loading: "Deleting job...",
+        success: (data) => `"${data.jobTitle}" deleted successfully!`,
+        error: "Failed to delete job. Please try again.",
+      },
+    );
   };
 
   const filteredJobs = jobs.filter(
@@ -193,7 +179,7 @@ export default function AdminJobsPage() {
                         variant="outline"
                         size="sm"
                         className="text-red-600 border-red-300 hover:bg-red-50"
-                        onClick={() => handleDelete(job.id)}
+                        onClick={() => handleDelete(job.id, job.title)}
                       >
                         <Trash2 size={16} />
                       </Button>

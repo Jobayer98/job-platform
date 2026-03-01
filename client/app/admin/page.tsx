@@ -16,31 +16,13 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
-
-interface Stats {
-  totalJobs: number;
-  totalApplications: number;
-  activeJobs: number;
-  recentApplications: number;
-}
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  category: string;
-  applications_count: number;
-  created_at: string;
-}
+import { API_URL } from "@/lib/constants";
+import type { Job, DashboardStats } from "@/lib/types";
 
 export default function AdminPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<Stats>({
+  const [stats, setStats] = useState<DashboardStats>({
     totalJobs: 0,
     totalApplications: 0,
     activeJobs: 0,
@@ -84,25 +66,22 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteJob = async (jobId: string) => {
-    if (!confirm("Are you sure you want to delete this job?")) return;
-
-    try {
-      const res = await fetch(`${API_URL}/jobs/${jobId}`, {
+  const handleDeleteJob = async (jobId: string, jobTitle: string) => {
+    toast.promise(
+      fetch(`${API_URL}/jobs/${jobId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
-      });
-
-      if (res.ok) {
-        toast.success("Job deleted successfully!");
-        fetchDashboardData();
-      } else {
-        toast.error("Failed to delete job");
-      }
-    } catch (error) {
-      console.error("Error deleting job:", error);
-      toast.error("Failed to delete job. Please try again.");
-    }
+      }).then(async (res) => {
+        if (!res.ok) throw new Error("Failed to delete job");
+        await fetchDashboardData();
+        return { jobTitle };
+      }),
+      {
+        loading: "Deleting job...",
+        success: (data) => `"${data.jobTitle}" deleted successfully!`,
+        error: "Failed to delete job. Please try again.",
+      },
+    );
   };
 
   if (loading) {
@@ -257,7 +236,7 @@ export default function AdminPage() {
                         variant="outline"
                         size="sm"
                         className="text-red-600 border-red-300 hover:bg-red-50"
-                        onClick={() => handleDeleteJob(job.id)}
+                        onClick={() => handleDeleteJob(job.id, job.title)}
                       >
                         <Trash2 size={16} />
                       </Button>

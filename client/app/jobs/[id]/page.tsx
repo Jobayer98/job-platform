@@ -7,14 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Briefcase, ArrowLeft, Clock, Users } from "lucide-react";
 import { Label } from "@/components/ui/label";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
+import { API_URL } from "@/lib/constants";
+import type { Job } from "@/lib/types";
 
 export default function JobDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -103,6 +102,19 @@ export default function JobDetailPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 text-lg mb-4">{error}</p>
+          <Button onClick={() => router.back()} variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Jobs
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!job) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 text-lg mb-4">Job not found</p>
           <Button onClick={() => router.back()} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Jobs
           </Button>

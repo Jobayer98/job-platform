@@ -3,19 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, MapPin, Briefcase } from "lucide-react";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  category: string;
-  created_at: string;
-  applications_count: number;
-}
+import { API_URL } from "@/lib/constants";
+import type { Job } from "@/lib/types";
 
 export function LatestJobs() {
   const [jobs, setJobs] = useState<Job[]>([]);

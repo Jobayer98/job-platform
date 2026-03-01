@@ -20,19 +20,8 @@ import {
   Building2,
   SlidersHorizontal,
 } from "lucide-react";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  category: string;
-  created_at: string;
-  applications_count: number;
-}
+import { API_URL } from "@/lib/constants";
+import type { Job, Pagination } from "@/lib/types";
 
 const categories = [
   "Technology",
@@ -58,7 +47,12 @@ function JobsContent() {
     category: "",
     page: 1,
   });
-  const [pagination, setPagination] = useState({ total: 0, pages: 1 });
+  const [pagination, setPagination] = useState<Pagination>({
+    total: 0,
+    pages: 1,
+    page: 1,
+    limit: 9,
+  });
 
   // Initialize filters from URL parameters
   useEffect(() => {
