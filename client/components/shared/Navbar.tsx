@@ -13,35 +13,40 @@ export function Navbar() {
     <nav className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-16 xl:px-20">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/images/logo.png"
-              alt="QuickHire Logo"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
-            <span className="text-2xl font-bold text-gray-900">QuickHire</span>
-          </Link>
+          {/* Left Side: Logo and Navigation */}
+          <div className="flex items-center gap-8">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-3">
+              <Image
+                src="/images/logo.png"
+                alt="QuickHire Logo"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+              <span className="text-2xl font-bold text-gray-900">
+                QuickHire
+              </span>
+            </Link>
 
-          {/* Desktop Nav - Centered */}
-          <div className="hidden md:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
-            <Link
-              href="/jobs"
-              className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
-            >
-              Find Jobs
-            </Link>
-            <Link
-              href="/companies"
-              className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
-            >
-              Browse Companies
-            </Link>
+            {/* Desktop Nav Links */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link
+                href="/jobs"
+                className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
+              >
+                Find Jobs
+              </Link>
+              <Link
+                href="/companies"
+                className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
+              >
+                Browse Companies
+              </Link>
+            </div>
           </div>
 
-          {/* Auth Buttons */}
+          {/* Right Side: Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
             <Button
               variant="ghost"
