@@ -10,8 +10,8 @@ export class JobController {
 
             res.status(201).json({
                 success: true,
-                data: job,
                 message: 'Job created successfully',
+                data: job,
             });
         } catch (error) {
             next(error);
@@ -20,13 +20,13 @@ export class JobController {
 
     async getJobs(req: Request, res: Response, next: NextFunction) {
         try {
-            const query: GetJobsQuery = req.query as any;
+            const query: GetJobsQuery = (req.validatedQuery || req.query) as any;
             const result = await jobService.getJobs(query);
 
             res.status(200).json({
                 success: true,
-                data: result,
                 message: 'Jobs retrieved successfully',
+                data: result,
             });
         } catch (error) {
             next(error);
@@ -40,8 +40,8 @@ export class JobController {
 
             res.status(200).json({
                 success: true,
-                data: job,
                 message: 'Job retrieved successfully',
+                data: job,
             });
         } catch (error) {
             next(error);
@@ -55,8 +55,8 @@ export class JobController {
 
             res.status(200).json({
                 success: true,
-                data: null,
                 message: 'Job deleted successfully',
+                data: null,
             });
         } catch (error) {
             next(error);

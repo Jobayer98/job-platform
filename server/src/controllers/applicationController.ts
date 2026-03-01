@@ -10,8 +10,8 @@ export class ApplicationController {
 
             res.status(201).json({
                 success: true,
-                data: application,
                 message: 'Application submitted successfully',
+                data: application,
             });
         } catch (error) {
             next(error);
@@ -26,8 +26,8 @@ export class ApplicationController {
 
             res.status(200).json({
                 success: true,
-                data: result,
                 message: 'Applications retrieved successfully',
+                data: result,
             });
         } catch (error) {
             next(error);
