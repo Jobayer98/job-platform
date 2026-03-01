@@ -2,7 +2,9 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
+import swaggerUi from 'swagger-ui-express';
 import { config } from './config/environment';
+import { swaggerSpec } from './config/swagger';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 import { logger } from './utils/logger';
 import routes from './routes';
@@ -37,6 +39,18 @@ app.get('/health', (_req, res) => {
         message: 'Server is healthy',
         timestamp: new Date().toISOString(),
     });
+});
+
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Job Platform API Documentation',
+}));
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
 });
 
 // Rate limiting (only for API routes)

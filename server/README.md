@@ -96,6 +96,20 @@ npm run seed
 
 Base URL: `http://localhost:3000/api/v1`
 
+### Interactive API Documentation
+
+Access the interactive Swagger UI documentation at:
+
+- **Swagger UI**: `http://localhost:3000/api-docs`
+- **OpenAPI JSON**: `http://localhost:3000/api-docs.json`
+
+The Swagger UI provides:
+
+- Interactive API testing
+- Request/response examples
+- Schema definitions
+- Authentication testing
+
 ### Health Check
 
 #### GET /health
