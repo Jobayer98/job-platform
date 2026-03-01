@@ -56,3 +56,5 @@ coverage/
 # Docker
 docker-compose.override.yml
 TODO.md
+
+/src/generated/prisma
