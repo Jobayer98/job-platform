@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { jobController } from '../controllers/jobController';
 import { validate, validateQuery } from '../middlewares/validation';
-import { authenticateAdmin, authenticatePoster } from '../middlewares/auth';
+import { authenticateAdmin } from '../middlewares/auth';
 import { createJobSchema, getJobsQuerySchema } from '../schemas/Job';
 
 const router = Router();
@@ -72,7 +72,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/RateLimitError'
  */
-router.get('/', validateQuery(getJobsQuerySchema), jobController.getJobs.bind(jobController));
+router.get('/', validateQuery(getJobsQuerySchema), jobController.getJobs);
 
 /**
  * @swagger
@@ -112,14 +112,14 @@ router.get('/', validateQuery(getJobsQuerySchema), jobController.getJobs.bind(jo
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.get('/:id', jobController.getJobById.bind(jobController));
+router.get('/:id', jobController.getJobById);
 
 /**
  * @swagger
  * /jobs:
  *   post:
- *     summary: Create a new job (Job Poster)
- *     description: Create a new job listing. Requires job poster authentication.
+ *     summary: Create a new job (Admin only)
+ *     description: Create a new job listing. Requires admin authentication.
  *     tags: [Jobs]
  *     security:
  *       - bearerAuth: []
@@ -158,7 +158,7 @@ router.get('/:id', jobController.getJobById.bind(jobController));
  *             schema:
  *               $ref: '#/components/schemas/UnauthorizedError'
  */
-router.post('/', authenticatePoster, validate(createJobSchema), jobController.createJob.bind(jobController));
+router.post('/', authenticateAdmin, validate(createJobSchema), jobController.createJob);
 
 /**
  * @swagger
@@ -206,6 +206,6 @@ router.post('/', authenticatePoster, validate(createJobSchema), jobController.cr
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.delete('/:id', authenticateAdmin, jobController.deleteJob.bind(jobController));
+router.delete('/:id', authenticateAdmin, jobController.deleteJob);
 
 export default router;

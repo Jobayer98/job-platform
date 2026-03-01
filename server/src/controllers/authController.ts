@@ -10,8 +10,8 @@ export class AuthController {
 
       res.status(201).json({
         success: true,
-        data: result,
         message: 'Registration successful',
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -25,8 +25,8 @@ export class AuthController {
 
       res.status(200).json({
         success: true,
-        data: result,
         message: 'Login successful',
+        data: result,
       });
     } catch (error) {
       next(error);

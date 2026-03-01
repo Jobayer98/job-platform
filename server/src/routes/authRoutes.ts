@@ -10,8 +10,8 @@ const router = Router();
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Register a new job poster
- *     description: Create a new job poster account
+ *     summary: Register a new admin user
+ *     description: Create a new admin account
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -61,6 +61,7 @@ const router = Router();
  *                           type: string
  *                         role:
  *                           type: string
+ *                           example: "admin"
  *                         created_at:
  *                           type: string
  *                           format: date-time
@@ -77,13 +78,13 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-router.post('/register', validate(registerSchema), authController.register.bind(authController));
+router.post('/register', validate(registerSchema), authController.register);
 
 /**
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login as job poster
+ *     summary: Login as admin
  *     description: Authenticate and receive JWT token
  *     tags: [Auth]
  *     requestBody:
@@ -128,6 +129,7 @@ router.post('/register', validate(registerSchema), authController.register.bind(
  *                           type: string
  *                         role:
  *                           type: string
+ *                           example: "admin"
  *                         created_at:
  *                           type: string
  *                           format: date-time
@@ -144,7 +146,7 @@ router.post('/register', validate(registerSchema), authController.register.bind(
  *             schema:
  *               $ref: '#/components/schemas/UnauthorizedError'
  */
-router.post('/login', validate(loginSchema), authController.login.bind(authController));
+router.post('/login', validate(loginSchema), authController.login);
 
 /**
  * @swagger
@@ -192,6 +194,6 @@ router.post('/login', validate(loginSchema), authController.login.bind(authContr
  *             schema:
  *               $ref: '#/components/schemas/UnauthorizedError'
  */
-router.get('/profile', authenticate, authController.getProfile.bind(authController));
+router.get('/profile', authenticate, authController.getProfile);
 
 export default router;

@@ -11,45 +11,18 @@ async function main() {
 
   console.log('Cleared existing data');
 
-  // Create sample users (job posters)
+  // Create sample admin users
   const hashedPassword = await bcrypt.hash('password123', 10);
 
-  const users = await Promise.all([
-    prisma.user.create({
-      data: {
-        name: 'John Smith',
-        email: 'john.smith@techcorp.com',
-        password: hashedPassword,
-        role: 'poster',
-      },
-    }),
-    prisma.user.create({
-      data: {
-        name: 'Sarah Johnson',
-        email: 'sarah@designstudio.com',
-        password: hashedPassword,
-        role: 'poster',
-      },
-    }),
-    prisma.user.create({
-      data: {
-        name: 'Mike Chen',
-        email: 'mike@cloudsolutions.com',
-        password: hashedPassword,
-        role: 'poster',
-      },
-    }),
-    prisma.user.create({
-      data: {
-        name: 'Admin User',
-        email: 'admin@jobplatform.com',
-        password: hashedPassword,
-        role: 'admin',
-      },
-    }),
-  ]);
+  const users = await prisma.user.create({
+    data: {
+      name: 'Admin User',
+      email: 'admin@jobplatform.com',
+      password: hashedPassword,
+      role: 'admin',
+    },
+  })
 
-  console.log(`Created ${users.length} users`);
 
   // Create sample jobs with user relationships
   const jobs = await Promise.all([
@@ -61,7 +34,7 @@ async function main() {
         category: 'Engineering',
         description:
           'We are looking for an experienced full stack developer to join our team. Must have 5+ years of experience with React, Node.js, and PostgreSQL.',
-        userId: users[0].id,
+        userId: users.id,
       },
     }),
     prisma.job.create({
@@ -72,7 +45,7 @@ async function main() {
         category: 'Engineering',
         description:
           'Join our creative team as a frontend developer. Experience with React, TypeScript, and modern CSS frameworks required.',
-        userId: users[1].id,
+        userId: users.id,
       },
     }),
     prisma.job.create({
@@ -83,7 +56,7 @@ async function main() {
         category: 'Operations',
         description:
           'Seeking a DevOps engineer with experience in AWS, Docker, Kubernetes, and CI/CD pipelines.',
-        userId: users[2].id,
+        userId: users.id,
       },
     }),
     prisma.job.create({
@@ -94,7 +67,7 @@ async function main() {
         category: 'Product',
         description:
           'Looking for a product manager to lead our product development efforts. Experience in agile methodologies required.',
-        userId: users[0].id,
+        userId: users.id,
       },
     }),
     prisma.job.create({
@@ -105,7 +78,7 @@ async function main() {
         category: 'Data',
         description:
           'Join our data science team. Must have strong Python skills and experience with machine learning frameworks.',
-        userId: users[1].id,
+        userId: users.id,
       },
     }),
   ]);
@@ -155,16 +128,12 @@ async function main() {
 
   console.log(`Created ${applications.length} applications`);
   console.log('\n=== Seed Summary ===');
-  console.log(`Users: ${users.length}`);
   console.log(`Jobs: ${jobs.length}`);
   console.log(`Applications: ${applications.length}`);
   console.log('\n=== Test Credentials ===');
-  console.log('Job Posters:');
-  console.log('  - john.smith@techcorp.com / password123');
-  console.log('  - sarah@designstudio.com / password123');
-  console.log('  - mike@cloudsolutions.com / password123');
-  console.log('Admin:');
   console.log('  - admin@jobplatform.com / password123');
+  console.log('  - john.smith@jobplatform.com / password123');
+  console.log('  - sarah@jobplatform.com / password123');
   console.log('\nSeed completed successfully!');
 }
 

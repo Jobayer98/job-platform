@@ -48,7 +48,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.post('/', validate(createApplicationSchema), applicationController.createApplication.bind(applicationController));
+router.post('/', validate(createApplicationSchema), applicationController.createApplication);
 
 /**
  * @swagger
@@ -87,6 +87,6 @@ router.post('/', validate(createApplicationSchema), applicationController.create
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.get('/jobs/:id/applications', authenticateAdmin, applicationController.getApplicationsByJobId.bind(applicationController));
+router.get('/jobs/:id/applications', authenticateAdmin, applicationController.getApplicationsByJobId);
 
 export default router;

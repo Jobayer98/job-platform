@@ -12,7 +12,7 @@ model User {
   name      String
   email     String   @unique
   password  String
-  role      String   @default("poster")
+  role      String   @default("admin")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   
