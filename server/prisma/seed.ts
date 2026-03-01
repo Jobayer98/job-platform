@@ -1,4 +1,5 @@
-import {prisma} from "../src/config/database"
+import { prisma } from '../src/config/database';
+import bcrypt from 'bcryptjs';
 
 async function main() {
   console.log('Starting seed...');
@@ -6,8 +7,51 @@ async function main() {
   // Clear existing data
   await prisma.application.deleteMany();
   await prisma.job.deleteMany();
+  await prisma.user.deleteMany();
 
-  // Create sample jobs
+  console.log('Cleared existing data');
+
+  // Create sample users (job posters)
+  const hashedPassword = await bcrypt.hash('password123', 10);
+
+  const users = await Promise.all([
+    prisma.user.create({
+      data: {
+        name: 'John Smith',
+        email: 'john.smith@techcorp.com',
+        password: hashedPassword,
+        role: 'poster',
+      },
+    }),
+    prisma.user.create({
+      data: {
+        name: 'Sarah Johnson',
+        email: 'sarah@designstudio.com',
+        password: hashedPassword,
+        role: 'poster',
+      },
+    }),
+    prisma.user.create({
+      data: {
+        name: 'Mike Chen',
+        email: 'mike@cloudsolutions.com',
+        password: hashedPassword,
+        role: 'poster',
+      },
+    }),
+    prisma.user.create({
+      data: {
+        name: 'Admin User',
+        email: 'admin@jobplatform.com',
+        password: hashedPassword,
+        role: 'admin',
+      },
+    }),
+  ]);
+
+  console.log(`Created ${users.length} users`);
+
+  // Create sample jobs with user relationships
   const jobs = await Promise.all([
     prisma.job.create({
       data: {
@@ -15,7 +59,9 @@ async function main() {
         company: 'Tech Corp',
         location: 'Remote',
         category: 'Engineering',
-        description: 'We are looking for an experienced full stack developer to join our team. Must have 5+ years of experience with React, Node.js, and PostgreSQL.',
+        description:
+          'We are looking for an experienced full stack developer to join our team. Must have 5+ years of experience with React, Node.js, and PostgreSQL.',
+        userId: users[0].id,
       },
     }),
     prisma.job.create({
@@ -24,7 +70,9 @@ async function main() {
         company: 'Design Studio',
         location: 'New York, NY',
         category: 'Engineering',
-        description: 'Join our creative team as a frontend developer. Experience with React, TypeScript, and modern CSS frameworks required.',
+        description:
+          'Join our creative team as a frontend developer. Experience with React, TypeScript, and modern CSS frameworks required.',
+        userId: users[1].id,
       },
     }),
     prisma.job.create({
@@ -33,7 +81,9 @@ async function main() {
         company: 'Cloud Solutions Inc',
         location: 'San Francisco, CA',
         category: 'Operations',
-        description: 'Seeking a DevOps engineer with experience in AWS, Docker, Kubernetes, and CI/CD pipelines.',
+        description:
+          'Seeking a DevOps engineer with experience in AWS, Docker, Kubernetes, and CI/CD pipelines.',
+        userId: users[2].id,
       },
     }),
     prisma.job.create({
@@ -42,7 +92,9 @@ async function main() {
         company: 'Startup Ventures',
         location: 'Remote',
         category: 'Product',
-        description: 'Looking for a product manager to lead our product development efforts. Experience in agile methodologies required.',
+        description:
+          'Looking for a product manager to lead our product development efforts. Experience in agile methodologies required.',
+        userId: users[0].id,
       },
     }),
     prisma.job.create({
@@ -51,7 +103,9 @@ async function main() {
         company: 'Analytics Pro',
         location: 'Boston, MA',
         category: 'Data',
-        description: 'Join our data science team. Must have strong Python skills and experience with machine learning frameworks.',
+        description:
+          'Join our data science team. Must have strong Python skills and experience with machine learning frameworks.',
+        userId: users[1].id,
       },
     }),
   ]);
@@ -66,7 +120,8 @@ async function main() {
         name: 'John Doe',
         email: 'john.doe@example.com',
         resumeLink: 'https://example.com/resumes/john-doe.pdf',
-        coverNote: 'I am very interested in this position and believe my experience aligns well with your requirements.',
+        coverNote:
+          'I am very interested in this position and believe my experience aligns well with your requirements.',
       },
     }),
     prisma.application.create({
@@ -75,7 +130,8 @@ async function main() {
         name: 'Jane Smith',
         email: 'jane.smith@example.com',
         resumeLink: 'https://example.com/resumes/jane-smith.pdf',
-        coverNote: 'With 7 years of full stack development experience, I would be a great fit for this role.',
+        coverNote:
+          'With 7 years of full stack development experience, I would be a great fit for this role.',
       },
     }),
     prisma.application.create({
@@ -86,10 +142,30 @@ async function main() {
         resumeLink: 'https://example.com/resumes/mike-johnson.pdf',
       },
     }),
+    prisma.application.create({
+      data: {
+        jobId: jobs[2].id,
+        name: 'Emily Davis',
+        email: 'emily.davis@example.com',
+        resumeLink: 'https://example.com/resumes/emily-davis.pdf',
+        coverNote: 'I have 5 years of DevOps experience and would love to join your team.',
+      },
+    }),
   ]);
 
   console.log(`Created ${applications.length} applications`);
-  console.log('Seed completed successfully!');
+  console.log('\n=== Seed Summary ===');
+  console.log(`Users: ${users.length}`);
+  console.log(`Jobs: ${jobs.length}`);
+  console.log(`Applications: ${applications.length}`);
+  console.log('\n=== Test Credentials ===');
+  console.log('Job Posters:');
+  console.log('  - john.smith@techcorp.com / password123');
+  console.log('  - sarah@designstudio.com / password123');
+  console.log('  - mike@cloudsolutions.com / password123');
+  console.log('Admin:');
+  console.log('  - admin@jobplatform.com / password123');
+  console.log('\nSeed completed successfully!');
 }
 
 main()

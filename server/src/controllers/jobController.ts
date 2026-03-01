@@ -6,12 +6,24 @@ export class JobController {
     async createJob(req: Request, res: Response, next: NextFunction) {
         try {
             const data: CreateJobInput = req.body;
-            const job = await jobService.createJob(data);
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({
+                    success: false,
+                    error: {
+                        code: 'UNAUTHORIZED',
+                        message: 'User not authenticated',
+                    },
+                });
+            }
+
+            const job = await jobService.createJob(data, userId);
 
             res.status(201).json({
                 success: true,
-                message: 'Job created successfully',
                 data: job,
+                message: 'Job created successfully',
             });
         } catch (error) {
             next(error);
@@ -25,8 +37,8 @@ export class JobController {
 
             res.status(200).json({
                 success: true,
-                message: 'Jobs retrieved successfully',
                 data: result,
+                message: 'Jobs retrieved successfully',
             });
         } catch (error) {
             next(error);
@@ -40,8 +52,8 @@ export class JobController {
 
             res.status(200).json({
                 success: true,
-                message: 'Job retrieved successfully',
                 data: job,
+                message: 'Job retrieved successfully',
             });
         } catch (error) {
             next(error);
@@ -55,8 +67,8 @@ export class JobController {
 
             res.status(200).json({
                 success: true,
-                message: 'Job deleted successfully',
                 data: null,
+                message: 'Job deleted successfully',
             });
         } catch (error) {
             next(error);

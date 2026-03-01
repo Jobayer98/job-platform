@@ -42,6 +42,10 @@ const swaggerDefinition = {
       description: 'Health check endpoints',
     },
     {
+      name: 'Auth',
+      description: 'Authentication and user management',
+    },
+    {
       name: 'Jobs',
       description: 'Job listing management',
     },

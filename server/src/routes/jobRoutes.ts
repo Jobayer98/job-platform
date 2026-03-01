@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { jobController } from '../controllers/jobController';
 import { validate, validateQuery } from '../middlewares/validation';
-import { authenticateAdmin } from '../middlewares/auth';
+import { authenticateAdmin, authenticatePoster } from '../middlewares/auth';
 import { createJobSchema, getJobsQuerySchema } from '../schemas/Job';
 
 const router = Router();
@@ -118,8 +118,8 @@ router.get('/:id', jobController.getJobById.bind(jobController));
  * @swagger
  * /jobs:
  *   post:
- *     summary: Create a new job (Admin only)
- *     description: Create a new job listing. Requires admin authentication.
+ *     summary: Create a new job (Job Poster)
+ *     description: Create a new job listing. Requires job poster authentication.
  *     tags: [Jobs]
  *     security:
  *       - bearerAuth: []
@@ -158,7 +158,7 @@ router.get('/:id', jobController.getJobById.bind(jobController));
  *             schema:
  *               $ref: '#/components/schemas/UnauthorizedError'
  */
-router.post('/', authenticateAdmin, validate(createJobSchema), jobController.createJob.bind(jobController));
+router.post('/', authenticatePoster, validate(createJobSchema), jobController.createJob.bind(jobController));
 
 /**
  * @swagger

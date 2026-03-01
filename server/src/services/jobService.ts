@@ -3,7 +3,7 @@ import { CreateJobInput, GetJobsQuery } from '../schemas/Job';
 import { AppError } from '../middlewares/errorHandler';
 
 export class JobService {
-    async createJob(data: CreateJobInput) {
+    async createJob(data: CreateJobInput, userId: string) {
         const job = await prisma.job.create({
             data: {
                 title: data.title,
@@ -11,6 +11,7 @@ export class JobService {
                 location: data.location,
                 category: data.category,
                 description: data.description,
+                userId: userId,
             },
         });
         return job;
