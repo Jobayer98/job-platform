@@ -26,52 +26,114 @@ export class JobService {
         const limit = parseInt(query.limit);
         const skip = (page - 1) * limit;
 
-        const where: any = {};
+        // Build WHERE conditions
+        const conditions: string[] = [];
+        const params: any[] = [];
+        let paramIndex = 1;
 
+        // Category filter
         if (query.category) {
-            where.category = { contains: query.category, mode: 'insensitive' };
+            conditions.push(`category ILIKE $${paramIndex}`);
+            params.push(`%${query.category}%`);
+            paramIndex++;
         }
+
+        // Location filter
         if (query.location) {
-            where.location = { contains: query.location, mode: 'insensitive' };
+            conditions.push(`location ILIKE $${paramIndex}`);
+            params.push(`%${query.location}%`);
+            paramIndex++;
         }
+
+        // Company filter
         if (query.company) {
-            where.company = { contains: query.company, mode: 'insensitive' };
+            conditions.push(`company ILIKE $${paramIndex}`);
+            params.push(`%${query.company}%`);
+            paramIndex++;
         }
+
+        // Full-text search with PostgreSQL
         if (query.search) {
-            where.OR = [
-                { title: { contains: query.search, mode: 'insensitive' } },
-                { description: { contains: query.search, mode: 'insensitive' } },
-            ];
+            const searchTerm = query.search.trim();
+
+            // Create tsquery - handle short words and phrases
+            const searchWords = searchTerm.split(/\s+/).filter(w => w.length > 0);
+            const tsquery = searchWords.map(word => {
+                // For short words (1-3 chars), use exact match
+                // For longer words, use prefix match
+                return word.length <= 3 ? word : `${word}:*`;
+            }).join(' & ');
+
+            conditions.push(`(
+                to_tsvector('english', 
+                    COALESCE(title, '') || ' ' || 
+                    COALESCE(company, '') || ' ' || 
+                    COALESCE(location, '') || ' ' || 
+                    COALESCE(category, '') || ' ' || 
+                    COALESCE(description, '')
+                ) @@ to_tsquery('english', $${paramIndex})
+                OR title ILIKE $${paramIndex + 1}
+                OR company ILIKE $${paramIndex + 1}
+                OR description ILIKE $${paramIndex + 1}
+            )`);
+            params.push(tsquery);
+            params.push(`%${searchTerm}%`);
+            paramIndex += 2;
         }
 
-        const [sortField, sortOrder] = query.sort.split(':');
-        const orderBy: any = {};
-        orderBy[sortField === 'created_at' ? 'createdAt' : sortField] = sortOrder || 'desc';
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-        const [jobs, total] = await Promise.all([
-            prisma.job.findMany({
-                where,
-                skip,
-                take: limit,
-                orderBy,
-                include: {
-                    _count: {
-                        select: { applications: true },
-                    },
-                },
-            }),
-            prisma.job.count({ where }),
-        ]);
+        // Sorting
+        const [sortField, sortOrder] = query.sort.split(':');
+        const orderByField = sortField === 'created_at' ? 'created_at' : sortField;
+        const orderByDirection = sortOrder === 'asc' ? 'ASC' : 'DESC';
+
+        // Get total count
+        const countQuery = `
+            SELECT COUNT(*) as total
+            FROM jobs
+            ${whereClause}
+        `;
+        const countResult: any = await prisma.$queryRawUnsafe(countQuery, ...params);
+        const total = parseInt(countResult[0]?.total || '0');
+
+        // Get jobs with pagination
+        const jobsQuery = `
+            SELECT 
+                j.id,
+                j.title,
+                j.slug,
+                j.company,
+                j.location,
+                j.category,
+                j.description,
+                j.created_at,
+                COUNT(a.id) as applications_count
+            FROM jobs j
+            LEFT JOIN applications a ON j.id = a.job_id
+            ${whereClause}
+            GROUP BY j.id, j.title, j.slug, j.company, j.location, j.category, j.description, j.created_at
+            ORDER BY j.${orderByField} ${orderByDirection}
+            LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+        `;
+
+        const jobs: any = await prisma.$queryRawUnsafe(
+            jobsQuery,
+            ...params,
+            limit,
+            skip
+        );
 
         const jobsWithCount = jobs.map((job: any) => ({
             id: job.id,
             title: job.title,
+            slug: job.slug,
             company: job.company,
             location: job.location,
             category: job.category,
             description: job.description,
-            created_at: job.createdAt,
-            applications_count: job._count.applications,
+            created_at: job.created_at,
+            applications_count: parseInt(job.applications_count || '0'),
         }));
 
         return {
@@ -102,6 +164,7 @@ export class JobService {
         return {
             id: job.id,
             title: job.title,
+            slug: job.slug,
             company: job.company,
             location: job.location,
             category: job.category,
