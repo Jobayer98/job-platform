@@ -1,4 +1,5 @@
 import { prisma } from '../src/config/database';
+import { generateUniqueJobSlug } from '../src/utils/slugGenerator';
 import bcrypt from 'bcryptjs';
 
 async function main() {
@@ -29,6 +30,7 @@ async function main() {
     prisma.job.create({
       data: {
         title: 'Senior Full Stack Developer',
+        slug: 'Senior-Full-Stack-Developer',
         company: 'Tech Corp',
         location: 'Remote',
         category: 'Engineering',
@@ -40,6 +42,7 @@ async function main() {
     prisma.job.create({
       data: {
         title: 'Frontend Developer',
+        slug: 'Frontend-Developer',
         company: 'Design Studio',
         location: 'New York, NY',
         category: 'Engineering',
@@ -51,6 +54,7 @@ async function main() {
     prisma.job.create({
       data: {
         title: 'DevOps Engineer',
+        slug: 'DevOps-Engineer',
         company: 'Cloud Solutions Inc',
         location: 'San Francisco, CA',
         category: 'Operations',
@@ -62,6 +66,7 @@ async function main() {
     prisma.job.create({
       data: {
         title: 'Product Manager',
+        slug: 'Product-Manager',
         company: 'Startup Ventures',
         location: 'Remote',
         category: 'Product',
@@ -73,6 +78,7 @@ async function main() {
     prisma.job.create({
       data: {
         title: 'Data Scientist',
+        slug: 'Data-Scientist',
         company: 'Analytics Pro',
         location: 'Boston, MA',
         category: 'Data',
@@ -145,3 +151,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

@@ -1,12 +1,16 @@
 import { prisma } from '../config/database';
 import { CreateJobInput, GetJobsQuery } from '../schemas/Job';
 import { AppError } from '../middlewares/errorHandler';
+import { generateUniqueJobSlug } from '../utils/slugGenerator';
 
 export class JobService {
     async createJob(data: CreateJobInput, userId: string) {
+        const slug = await generateUniqueJobSlug(data.title);
+
         const job = await prisma.job.create({
             data: {
                 title: data.title,
+                slug: slug,
                 company: data.company,
                 location: data.location,
                 category: data.category,
