@@ -267,25 +267,6 @@ npm run build
 npm start
 ```
 
-### Deploy to Vercel
-
-The easiest way to deploy is using [Vercel](https://vercel.com):
-
-1. Push your code to GitHub
-2. Import project in Vercel
-3. Configure environment variables
-4. Deploy
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-repo/job-platform)
-
-## 🧪 Testing
-
-Currently, no tests are implemented. Future enhancements:
-
-- Unit tests with Jest
-- Integration tests with React Testing Library
-- E2E tests with Playwright
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -316,13 +297,6 @@ Currently, no tests are implemented. Future enhancements:
 - [ ] Social media integration
 - [ ] Company profiles
 - [ ] Job recommendations
-
-## 📚 Learn More
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com/)
 
 ## 📄 License
 

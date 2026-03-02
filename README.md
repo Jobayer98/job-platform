@@ -111,9 +111,9 @@ npm run dev
 
 4. **Access the application**
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001/api/v1
-- API Docs: http://localhost:3001/api-docs
+- Frontend: https://job-platform-client-ixbq.onrender.com
+- Backend API: API Docs: https://job-platform-server-mw6h.onrender.com/api/v1
+- API Docs: https://job-platform-server-mw6h.onrender.com/api-docs
 
 ## 📊 System Architecture
 
