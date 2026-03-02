@@ -48,15 +48,19 @@ export function Navbar() {
 
           {/* Right Side: Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 font-medium"
-            >
-              Login
-            </Button>
-            <Button className="bg-indigo-600 text-white hover:bg-indigo-700 font-medium px-6 rounded-none">
-              Sign Up
-            </Button>
+            <Link href="/admin/auth">
+              <Button
+                variant="ghost"
+                className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 font-medium"
+              >
+                Login
+              </Button>
+            </Link>
+            <Link href="/admin/auth">
+              <Button className="bg-indigo-600 text-white hover:bg-indigo-700 font-medium px-6 rounded-none">
+                Sign Up
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -86,13 +90,19 @@ export function Navbar() {
             Browse Companies
           </Link>
           <div className="flex flex-col space-y-2 pt-4 border-t border-gray-100">
-            <Button
-              variant="outline"
-              className="text-indigo-600 border-indigo-600"
-            >
-              Login
-            </Button>
-            <Button className="bg-indigo-600 text-white">Sign Up</Button>
+            <Link href="/admin/auth">
+              <Button
+                variant="outline"
+                className="w-full text-indigo-600 border-indigo-600"
+              >
+                Login
+              </Button>
+            </Link>
+            <Link href="/admin/auth">
+              <Button className="w-full bg-indigo-600 text-white">
+                Sign Up
+              </Button>
+            </Link>
           </div>
         </div>
       )}
