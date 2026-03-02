@@ -25,10 +25,6 @@
   },
   "include": [
     "src/**/*",
-<<<<<<< HEAD
-=======
-    "prisma.config.ts"
->>>>>>> 6e3fed05a2bdfe4536d18524037830cd5fc21e3e
   ],
   "exclude": [
     "node_modules",
