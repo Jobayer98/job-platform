@@ -19,10 +19,10 @@ const swaggerDefinition = {
   servers: [
     {
       url: `http://localhost:${config.port}/api/${config.api.version}`,
-      description: 'Development server',
+      description: 'Local server',
     },
     {
-      url: `https://api.jobplatform.com/api/${config.api.version}`,
+      url: `https://job-platform-server-mw6h.onrender.com/api/${config.api.version}`,
       description: 'Production server',
     },
   ],
