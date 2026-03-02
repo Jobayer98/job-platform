@@ -459,3 +459,214 @@ npm start
 ## License
 
 ISC
+
+## Deploying to Render
+
+### Prerequisites
+
+1. A Render account (https://render.com)
+2. Your code pushed to GitHub/GitLab
+3. PostgreSQL database on Render
+
+### Step-by-Step Deployment
+
+#### 1. Create PostgreSQL Database
+
+1. Go to Render Dashboard
+2. Click "New +" → "PostgreSQL"
+3. Configure:
+   - **Name**: `quickhire-db`
+   - **Database**: `jobdb`
+   - **User**: `jobdb_user`
+   - **Region**: Choose closest to your users
+   - **Plan**: Free (or paid for production)
+4. Click "Create Database"
+5. Copy the **External Database URL** (you'll need this)
+
+#### 2. Deploy Backend API
+
+**Option A: Using Render Dashboard**
+
+1. Go to Render Dashboard
+2. Click "New +" → "Web Service"
+3. Connect your repository
+4. Configure:
+   - **Name**: `quickhire-api`
+   - **Region**: Same as database
+   - **Branch**: `main` or `master`
+   - **Root Directory**: `server` ⚠️ **IMPORTANT for monorepo**
+   - **Runtime**: Node
+   - **Build Command**:
+     ```bash
+     npm install && npm run db:generate && npm run build
+     ```
+   - **Start Command**:
+     ```bash
+     npm start
+     ```
+   - **Plan**: Free (or paid for production)
+
+5. Add Environment Variables:
+   - `NODE_ENV` = `production`
+   - `PORT` = `3001`
+   - `DATABASE_URL` = (Paste your External Database URL with `?sslmode=require` at the end)
+   - `JWT_SECRET` = (Generate a secure random string)
+   - `JWT_EXPIRE` = `7d`
+   - `API_VERSION` = `v1`
+   - `CORS_ORIGIN` = `https://your-frontend-url.onrender.com` (update after deploying frontend)
+   - `RATE_LIMIT_WINDOW` = `15`
+   - `RATE_LIMIT_MAX` = `100`
+
+6. Click "Create Web Service"
+
+**Option B: Using render.yaml (Infrastructure as Code)**
+
+1. The `render.yaml` file is already in your project root
+2. Update the `CORS_ORIGIN` in render.yaml with your frontend URL
+3. Push to GitHub
+4. In Render Dashboard:
+   - Click "New +" → "Blueprint"
+   - Connect your repository
+   - Render will automatically detect and deploy based on render.yaml
+
+#### 3. Run Database Migrations
+
+After deployment, you need to run migrations:
+
+1. Go to your Web Service in Render Dashboard
+2. Click "Shell" tab
+3. Run:
+   ```bash
+   npm run db:migrate
+   ```
+
+Or use Render's one-time job:
+
+```bash
+npm run db:push
+```
+
+#### 4. Seed Database (Optional)
+
+To add sample data:
+
+1. In the Shell tab, run:
+   ```bash
+   npm run seed
+   ```
+
+#### 5. Test Your API
+
+Your API will be available at:
+
+```
+https://quickhire-api.onrender.com/api/v1
+```
+
+Test the health endpoint:
+
+```
+https://quickhire-api.onrender.com/api/v1/health
+```
+
+### Important Notes for Render Deployment
+
+1. **Monorepo Structure**: Always set `Root Directory` to `server` in Render settings
+
+2. **Database URL Format**: Ensure your DATABASE_URL includes SSL:
+
+   ```
+   postgresql://user:password@host/database?sslmode=require
+   ```
+
+3. **Free Tier Limitations**:
+   - Service spins down after 15 minutes of inactivity
+   - First request after spin-down takes ~30 seconds
+   - Database has 90-day expiration on free tier
+
+4. **Connection Pooling**: The database configuration in `src/config/database.ts` already handles:
+   - SSL connections
+   - Connection pooling
+   - Automatic reconnection
+   - Graceful shutdown
+
+5. **Environment Variables**: Never commit `.env` files. Always use Render's environment variable settings.
+
+6. **Build Failures**: If build fails, check:
+   - Root Directory is set to `server`
+   - All dependencies are in `package.json`
+   - Build command includes `npm run db:generate`
+
+### Monitoring and Logs
+
+1. **View Logs**: Go to your service → "Logs" tab
+2. **Metrics**: Go to your service → "Metrics" tab
+3. **Health Checks**: Render automatically monitors `/api/v1/health`
+
+### Updating Your Deployment
+
+1. Push changes to your GitHub repository
+2. Render automatically detects and redeploys
+3. Or manually trigger deploy from Render Dashboard
+
+### Troubleshooting
+
+**Problem**: "Server has closed the connection" error
+
+**Solution**:
+
+- Ensure DATABASE_URL includes `?sslmode=require`
+- Check database connection pooling settings in `src/config/database.ts`
+- Verify database is running in Render Dashboard
+
+**Problem**: Build fails with "Cannot find module"
+
+**Solution**:
+
+- Ensure Root Directory is set to `server`
+- Run `npm install` locally to verify dependencies
+- Check that all imports use correct paths
+
+**Problem**: 502 Bad Gateway
+
+**Solution**:
+
+- Check if PORT environment variable is set to `3001`
+- Verify the start command is `npm start`
+- Check logs for startup errors
+
+### Production Checklist
+
+- [ ] Database created and running
+- [ ] Environment variables configured
+- [ ] Root Directory set to `server`
+- [ ] Build and start commands correct
+- [ ] Migrations run successfully
+- [ ] Health check endpoint responding
+- [ ] CORS_ORIGIN updated with frontend URL
+- [ ] JWT_SECRET is secure and random
+- [ ] Database backups enabled (paid plans)
+
+### Cost Optimization
+
+**Free Tier**:
+
+- 1 PostgreSQL database (90 days)
+- 750 hours/month web service
+- Automatic spin-down after inactivity
+
+**Paid Plans** (Recommended for Production):
+
+- Persistent database
+- No spin-down
+- More resources
+- Automatic backups
+- Custom domains
+
+### Support
+
+For Render-specific issues:
+
+- Documentation: https://render.com/docs
+- Community: https://community.render.com
+- Support: support@render.com
